@@ -96,6 +96,10 @@ code --install-extension vjudge-extension.vsix
 | 搜索团队 | `POST /group/search` | 表单 `name`，返回 `cards` |
 | 比赛列表 | `GET /contest/data` | DataTables 参数；`category=mygroup` 为我的团队比赛，`category=group` 配合 `owner=团队名` 为指定团队 |
 | 比赛题目 | `GET /contest/{id}` | 页面内联 `dataJson` 的 `problems`，每项含 `oj`、`probNum`、`num` |
+| 比赛报名 | `POST /contest/{id}/participation` | 表单 `teamId`，`0` 表示以个人身份报名 |
+| 比赛榜单 | `GET /contest/rank/single/{id}` | `participants` 为用户资料，`submissions` 为提交明细，统计需在本地聚合 |
+
+榜单接口并不直接给出解题数和罚时，插件从提交明细按用户聚合出解题数、首次通过罚时与得分，并优先显示中文昵称。比赛报名状态取自内联 `dataJson` 的 `participation.currentName`，可区分个人与团队报名。题面页的"最近提交"只查询当前登录用户，不会把全站他人的 AC 误显示为自己的成绩。
 
 未登录时 VJudge 会把 `category=mygroup` 静默退化成全量公开比赛，因此插件在发请求前先确认登录态：未登录时该范围不会发起比赛列表请求，视图只显示登录入口。
 

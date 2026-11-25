@@ -173,11 +173,13 @@ class ContestDetailWebview {
         this.rank = undefined;
         await this.load();
         return;
-      case 'tab':
-        this.activeTab = message.data === 'rank' ? 'rank' : 'detail';
-        if (this.activeTab === 'rank' && !this.rank) await this.loadRank();
-        else this.send(this.state());
+      case 'tab': {
+        const tab = ['detail', 'problems', 'rank'].includes(message.data) ? message.data : 'detail';
+        this.activeTab = tab;
+        if (tab === 'rank' && !this.rank) await this.loadRank();
+        else this.send(this.state({ activeTab: tab }));
         return;
+      }
       case 'register':
         return this.registerContest();
       case 'openBrowser':

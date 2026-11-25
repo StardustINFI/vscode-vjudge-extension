@@ -115,7 +115,11 @@ class ProblemDetailWebview {
       const favorites = await this.getClient().getFavorites({ signal: controller.signal });
       if (this.controller !== controller) return;
       this.favorite = favorites.some((item) => String(item.id) === String(this.currentProblemId));
-      const submissions = await this.getClient().getSubmitStatus({ problemId: this.currentProblemId }, { signal: controller.signal });
+      // 只取当前登录用户在该题的提交；未登录时不展示任何人的提交，
+      // 避免把全站他人的 AC 误当成"我的最新提交"。
+      const submissions = session.loggedIn
+        ? await this.getClient().getSubmitStatus({ problemId: this.currentProblemId, username: session.username }, { signal: controller.signal })
+        : { submissions: [] };
       if (this.controller !== controller) return;
       this.latestSubmission = submissions.submissions[0];
       this.updatePolling(this.latestSubmission && /pending|judging|queued/i.test(this.latestSubmission.result));
@@ -232,7 +236,8 @@ class ProblemDetailWebview {
     if (this.polling || !this.panel) return;
     this.polling = true;
     try {
-      const result = await this.getClient().getSubmitStatus({ problemId: this.currentProblemId });
+      const username = this.user && (this.user.username || this.user.nickname);
+      const result = await this.getClient().getSubmitStatus({ problemId: this.currentProblemId, username: username || '' });
       this.latestSubmission = result.submissions[0];
       const pending = this.latestSubmission && /pending|judging|queued/i.test(this.latestSubmission.result);
       this.send({ type: 'submission', submission: this.latestSubmission });

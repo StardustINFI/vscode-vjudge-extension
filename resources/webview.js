@@ -223,9 +223,15 @@ function renderContestProblems() {
 function renderContestRank() {
   const rankings = (state.rank && (state.rank.rankings || state.rank.rows)) || [];
   const sorted = sortItems(rankings, ui.rankSortKey, ui.rankSortDirection);
+  const penaltyText = (item) => {
+    const minutes = item.penaltyMinutes;
+    if (typeof minutes === 'number') return String(minutes);
+    return String(item.penalty ?? '-');
+  };
   const rows = sorted.map((item) => `<tr>
-    <td>${escapeHtml(String(item.rank ?? '-'))}</td><td>${escapeHtml(item.username || '')}</td>
-    <td>${escapeHtml(String(item.solved ?? '-'))}</td><td>${escapeHtml(String(item.penalty ?? '-'))}</td>
+    <td>${escapeHtml(String(item.rank ?? '-'))}</td>
+    <td>${escapeHtml(item.nickname || item.displayName || item.username || '')}</td>
+    <td>${escapeHtml(String(item.solved ?? '-'))}</td><td>${escapeHtml(penaltyText(item))}</td>
     <td>${escapeHtml(String(item.score ?? '-'))}</td>
   </tr>`).join('');
   return `<section class="card"><h2>榜单</h2><div class="table-wrap"><table>

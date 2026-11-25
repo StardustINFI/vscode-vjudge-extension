@@ -1,7 +1,10 @@
 'use strict';
 
+const fs = require('node:fs');
+const path = require('node:path');
 const vscode = require('vscode');
 const { problemDetailUrl } = require('../lib/endpoints');
+const templates = require('../templates');
 
 function nonce() {
   let text = '';
@@ -33,19 +36,14 @@ class ProblemDetailWebview {
     const cssUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(root, 'webview.css'));
     const scriptUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(root, 'webview.js'));
     const currentNonce = nonce();
-    return `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${this.panel.webview.cspSource} https: data:; style-src ${this.panel.webview.cspSource}; script-src 'nonce-${currentNonce}';">
-<link rel="stylesheet" href="${cssUri}">
-</head>
-<body data-view="problem">
-<div id="app" class="vjudge-app" aria-live="polite"></div>
-<script nonce="${currentNonce}" src="${scriptUri}"></script>
-</body>
-</html>`;
+    const template = fs.readFileSync(path.join(__dirname, '..', 'resources', 'webview.html'), 'utf8');
+    const csp = `default-src 'none'; img-src ${this.panel.webview.cspSource} https: data:; style-src ${this.panel.webview.cspSource}; script-src 'nonce-${currentNonce}';`;
+    return template
+      .replace(/\{\{CSP\}\}/g, csp)
+      .replace(/\{\{CSS_URI\}\}/g, cssUri)
+      .replace(/\{\{SCRIPT_URI\}\}/g, scriptUri)
+      .replace(/\{\{NONCE\}\}/g, currentNonce)
+      .replace(/\{\{VIEW\}\}/g, 'problem');
   }
 
   open(problemId) {
@@ -91,6 +89,7 @@ class ProblemDetailWebview {
       latestSubmission: this.latestSubmission,
       user: this.user,
       draft: this.currentProblemId ? this.store.getDraft(this.currentProblemId) : undefined,
+      languages: templates.LANGUAGES,
       mockMode: this.store.isMockMode(),
       loading: this.loading,
       error: this.error,

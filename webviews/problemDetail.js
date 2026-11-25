@@ -43,7 +43,7 @@ class ProblemDetailWebview {
     const currentNonce = nonce();
     const template = fs.readFileSync(path.join(__dirname, '..', 'resources', 'webview.html'), 'utf8');
     // KaTeX 渲染结果大量使用内联 style，字体从本地 resources 加载；script 仍只允许 nonce。
-    const csp = `default-src 'none'; img-src ${cspSource} https: data:; style-src ${cspSource} 'unsafe-inline'; font-src ${cspSource}; script-src 'nonce-${currentNonce}';`;
+    const csp = `default-src 'none'; img-src ${cspSource} https: http: data:; style-src ${cspSource} 'unsafe-inline'; font-src ${cspSource}; script-src 'nonce-${currentNonce}';`;
     return template
       .replace(/\{\{CSP\}\}/g, csp)
       .replace(/\{\{CSS_URI\}\}/g, cssUri)

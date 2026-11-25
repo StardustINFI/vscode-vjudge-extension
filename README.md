@@ -128,6 +128,8 @@ VJudge 的服务端 HTML 是未经前端渲染的模板，其中含有未翻译�
 
 题面还支持洛谷 Markdown 扩展语法：`:::info` / `:::success` / `:::warning` / `:::error` 折叠框（可用 `{open}` 默认展开、支持嵌套与公式标题）、`:::align{center}` / `:::align{right}` 对齐、`:::epigraph` 引言、`::cute-table{tuack}` 表格以及表格的 `^` / `<` 单元格合并。此外还支持删除线、任务列表、带 title 的链接与图片、代码块行号与高亮参数；按洛谷规则不解析原始 HTML 标签。
 
+题面与比赛描述中的图片（含洛谷图床 `cdn.luogu.com.cn`）由扩展宿主下载后内联为 data URI 再交给 Webview 展示，彻底绕过 Webview 的网络、证书与防盗链限制；单张上限 2MB、超时 15 秒、同一图片会话内缓存。下载失败时保留原始链接由 Webview 直接加载，CSP 同时放行 `http:` 与 `https:`。懒加载占位（`data-src` 等）会提升为真实 `src`，跨行断开的图片/链接语法会在解析时收拢；图片统一以 `referrerpolicy="no-referrer"` 加载以兼容防盗链。
+
 代码提交区可选择语言并直接编辑代码。停止输入约 500 毫秒后会自动保存本地草稿；提交成功后会自动刷新最新评测状态。
 
 ### 提交流程

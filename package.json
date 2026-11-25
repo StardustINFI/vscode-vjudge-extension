@@ -32,6 +32,7 @@
       { "command": "vjudge.openProblemList", "title": "VJudge: Open Problem List" },
       { "command": "vjudge.openProblemDetail", "title": "VJudge: Open Problem Detail" },
       { "command": "vjudge.openContests", "title": "VJudge: Open Contests" },
+      { "command": "vjudge.openContestDetail", "title": "VJudge: Open Contest Detail" },
       { "command": "vjudge.openFavorites", "title": "VJudge: Open Favorites" },
       { "command": "vjudge.openUserInfo", "title": "VJudge: Open User Info" },
       { "command": "vjudge.submitCurrentFile", "title": "VJudge: Submit Current File" },
@@ -76,6 +77,7 @@
     },
     "menus": {
       "commandPalette": [
+        { "command": "vjudge.openContestDetail", "when": "false" },
         { "command": "vjudge.addFavorite", "when": "false" },
         { "command": "vjudge.removeFavorite", "when": "false" },
         { "command": "vjudge.newCodeFile", "when": "false" },
@@ -99,7 +101,7 @@
         { "command": "vjudge.removeFavorite", "when": "view == vjudge.favorites && viewItem == favorite", "group": "vjudge@1" },
         { "command": "vjudge.viewSubmission", "when": "view == vjudge.submissions && viewItem == submission", "group": "navigation@1" },
         { "command": "vjudge.rejudge", "when": "view == vjudge.submissions && viewItem == submission", "group": "vjudge@1" },
-        { "command": "vjudge.openContests", "when": "view == vjudge.contests && viewItem == contest", "group": "navigation@1" },
+        { "command": "vjudge.openContestDetail", "when": "view == vjudge.contests && viewItem == contest", "group": "navigation@1" },
         { "command": "vjudge.openContestRank", "when": "view == vjudge.contests && viewItem == contest", "group": "vjudge@1" },
         { "command": "vjudge.registerContest", "when": "view == vjudge.contests && viewItem == contest", "group": "vjudge@2" }
       ]

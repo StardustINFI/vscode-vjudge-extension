@@ -227,16 +227,20 @@ ul.lg-task li input { margin-right: 6px; vertical-align: middle; }
 
 .samples { display: grid; gap: var(--vjudge-gap); }
 
+/* 样例输入/输出各自独立成块，铺满宽度；复制按钮贴在对应样例下方 */
 .sample {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
-  align-items: start;
 }
 
-.sample pre { margin: 0; white-space: pre; }
+.sample-block {
+  display: grid;
+  gap: 8px;
+}
 
-.sample-actions { display: grid; gap: 6px; }
+.sample pre { margin: 0; white-space: pre; width: 100%; }
+
+.sample-actions { display: flex; gap: 6px; }
 
 .editor {
   display: grid;
@@ -410,6 +414,5 @@ td.button-cell, th.button-cell { text-align: right; }
 @media (max-width: 720px) {
   .toolbar, .footer { position: static; align-items: flex-start; flex-direction: column; }
   .actions { justify-content: flex-start; }
-  .sample { grid-template-columns: 1fr; }
   .profile { grid-template-columns: 1fr; justify-items: center; text-align: center; }
 }

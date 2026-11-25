@@ -79,7 +79,7 @@ function initializeEditorState() {
   const draft = state.draft || {};
   const language = state.languages && state.languages.length ? state.languages[0].id : 'cpp';
   ui.language = draft.language || language;
-  ui.code = draft.code || `// ${state.problem ? state.problem.title : state.problemId}\n`;
+  ui.code = draft.code || '';
 }
 
 // KaTeX auto-render 会在文本节点中查找公式并替换为排版后的 HTML。
@@ -179,12 +179,18 @@ function renderProblem() {
     '<button data-action="refresh">刷新</button>'
   ].join('');
   const samples = (problem.samples || []).map((sample, index) => `<div class="card sample">
-    <pre>${escapeHtml(sample.input)}</pre>
-    <div class="sample-actions">
-      <button data-action="copy" data-index="${index}" data-kind="input">复制输入</button>
-      <button data-action="copy" data-index="${index}" data-kind="output">复制输出</button>
+    <div class="sample-block">
+      <pre>${escapeHtml(sample.input)}</pre>
+      <div class="sample-actions">
+        <button data-action="copy" data-index="${index}" data-kind="input">复制输入</button>
+      </div>
     </div>
-    <pre>${escapeHtml(sample.output)}</pre>
+    <div class="sample-block">
+      <pre>${escapeHtml(sample.output)}</pre>
+      <div class="sample-actions">
+        <button data-action="copy" data-index="${index}" data-kind="output">复制输出</button>
+      </div>
+    </div>
   </div>`).join('');
   return `${toolbar(problem.title || state.problemId || '题目详情', `${metadata}${state.mockMode ? ' · ' : ''}${state.mockMode ? badge('Mock 模式', 'mock') : ''}`, actions)}
   <section class="card"><h2>题目描述</h2><div class="description">${problem.html || ''}</div></section>

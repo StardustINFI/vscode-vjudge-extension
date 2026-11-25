@@ -24,7 +24,9 @@ function getLanguage(id) {
 
 function getTemplate(id, problem) {
   const language = getLanguage(id);
-  return moduleMap.get(language.id).template(problem);
+  const code = moduleMap.get(language.id).template(problem);
+  // 移除模板首行的题号注释（//、# 或 /* */ 形式），提交代码里不需要它
+  return code.replace(/^[ \t]*(?:\/\/[^\n]*|#[^\n]*|\/\*[\s\S]*?\*\/)[ \t]*\r?\n/, '');
 }
 
 function languageForDocument(documentLanguageId) {

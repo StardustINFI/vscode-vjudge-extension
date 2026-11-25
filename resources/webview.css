@@ -138,6 +138,13 @@ select, input {
 
 .description table { display: block; overflow-x: auto; max-width: 100%; }
 
+/* KaTeX 块级公式过长时横向滚动，避免撑破 Webview 布局 */
+.description .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 0;
+}
+
 .vjudge-empty {
   margin: 0;
   padding: 18px;

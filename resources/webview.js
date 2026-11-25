@@ -82,20 +82,47 @@ function initializeEditorState() {
   ui.code = draft.code || `// ${state.problem ? state.problem.title : state.problemId}\n`;
 }
 
+// KaTeX auto-render 会在文本节点中查找公式并替换为排版后的 HTML。
+// 每次 DOM 重建后都要重新调用，否则切题/切 tab 后公式会退回纯文本。
+function renderMath(root) {
+  if (typeof renderMathInElement !== 'function') return;
+  root.querySelectorAll('.description').forEach((element) => {
+    try {
+      renderMathInElement(element, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false,
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'option']
+      });
+    } catch (error) {
+      // 单个题面渲染失败时保留原始公式文本，不影响其他内容。
+    }
+  });
+}
+
+function setHtml(app, html) {
+  app.innerHTML = html;
+  renderMath(app);
+}
+
 function render() {
   const app = document.getElementById('app');
   if (!app) return;
   if (state.loading && !hasLoadedData()) {
-    app.innerHTML = renderState('<div class="spinner"></div>', '正在加载 VJudge 数据…');
+    setHtml(app, renderState('<div class="spinner"></div>', '正在加载 VJudge 数据…'));
     return;
   }
   if (state.error && !hasLoadedData()) {
-    app.innerHTML = renderState('', escapeHtml(state.error), 'error-state', 'refresh');
+    setHtml(app, renderState('', escapeHtml(state.error), 'error-state', 'refresh'));
     return;
   }
-  if (state.view === 'problem') app.innerHTML = renderProblem();
-  else if (state.view === 'contest') app.innerHTML = renderContest();
-  else app.innerHTML = renderUser();
+  if (state.view === 'problem') setHtml(app, renderProblem());
+  else if (state.view === 'contest') setHtml(app, renderContest());
+  else setHtml(app, renderUser());
 }
 
 function hasLoadedData() {
@@ -356,5 +383,5 @@ function paginate(items, page = 1, size = PAGE_SIZE) {
 if (typeof document !== 'undefined' && document.getElementById('app')) initialize();
 
 if (typeof module !== 'undefined') {
-  module.exports = { escapeHtml, filterProblems, sortItems, paginate, statusClass, statusBadge };
+  module.exports = { escapeHtml, filterProblems, sortItems, paginate, statusClass, statusBadge, renderMath };
 }

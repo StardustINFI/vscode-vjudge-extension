@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="{{CSP}}">
   <link rel="stylesheet" href="{{CSS_URI}}">
+  <link rel="stylesheet" href="{{KATEX_CSS_URI}}">
   <title>VJudge</title>
 </head>
 <body data-view="{{VIEW}}">
   <div id="app" class="vjudge-app" aria-live="polite"></div>
   <div id="toast" class="toast" role="status"></div>
+  <script nonce="{{NONCE}}" src="{{KATEX_JS_URI}}"></script>
+  <script nonce="{{NONCE}}" src="{{AUTORENDER_JS_URI}}"></script>
   <script nonce="{{NONCE}}" src="{{SCRIPT_URI}}"></script>
 </body>
 </html>

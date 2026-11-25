@@ -180,12 +180,14 @@ function renderProblem() {
   ].join('');
   const samples = (problem.samples || []).map((sample, index) => `<div class="card sample">
     <div class="sample-block">
+      <h3>输入</h3>
       <pre>${escapeHtml(sample.input)}</pre>
       <div class="sample-actions">
         <button data-action="copy" data-index="${index}" data-kind="input">复制输入</button>
       </div>
     </div>
     <div class="sample-block">
+      <h3>输出</h3>
       <pre>${escapeHtml(sample.output)}</pre>
       <div class="sample-actions">
         <button data-action="copy" data-index="${index}" data-kind="output">复制输出</button>

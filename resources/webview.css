@@ -136,7 +136,29 @@ select, input {
   object-fit: contain;
 }
 
+/* 通用表格保持块级横向滚动；样例表格单独恢复表格布局 */
 .description table { display: block; overflow-x: auto; max-width: 100%; }
+
+/* 题面样例表格（VJudge vjudge_sample）：输入/输出各占一半并横向铺满 */
+.description table.vjudge_sample {
+  display: table;
+  width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.description table.vjudge_sample th,
+.description table.vjudge_sample td {
+  width: 50%;
+  vertical-align: top;
+}
+
+.description table.vjudge_sample pre {
+  margin: 0;
+  white-space: pre;
+  width: 100%;
+}
 
 /* KaTeX 块级公式过长时横向滚动，避免撑破 Webview 布局 */
 .description .katex-display {
@@ -227,15 +249,25 @@ ul.lg-task li input { margin-right: 6px; vertical-align: middle; }
 
 .samples { display: grid; gap: var(--vjudge-gap); }
 
-/* 样例输入/输出各自独立成块，铺满宽度；复制按钮贴在对应样例下方 */
+/* 样例输入/输出各占一半横向铺满；复制按钮贴在对应样例下方 */
 .sample {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
 }
 
 .sample-block {
   display: grid;
   gap: 8px;
+  min-width: 0;
+}
+
+.sample-block h3 {
+  margin: 0;
+  color: var(--vjudge-accent);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .sample pre { margin: 0; white-space: pre; width: 100%; }
@@ -414,5 +446,6 @@ td.button-cell, th.button-cell { text-align: right; }
 @media (max-width: 720px) {
   .toolbar, .footer { position: static; align-items: flex-start; flex-direction: column; }
   .actions { justify-content: flex-start; }
+  .sample { grid-template-columns: 1fr; }
   .profile { grid-template-columns: 1fr; justify-items: center; text-align: center; }
 }

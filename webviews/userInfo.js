@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vscode = require('vscode');
-const { PATHS, withQuery } = require('../lib/endpoints');
+const { userInfoUrl } = require('../lib/endpoints');
 
 function nonce() {
   let text = '';
@@ -137,7 +137,7 @@ class UserInfoWebview {
   }
 
   openBrowser() {
-    const url = withQuery(PATHS.userInfo, { username: this.currentUsername });
+    const url = userInfoUrl(this.currentUsername);
     return vscode.env.openExternal(vscode.Uri.parse(url));
   }
 

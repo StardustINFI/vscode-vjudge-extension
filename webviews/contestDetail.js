@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vscode = require('vscode');
-const { PATHS, contestUrl } = require('../lib/endpoints');
+const { contestUrl } = require('../lib/endpoints');
 
 function nonce() {
   let text = '';
@@ -199,7 +199,7 @@ class ContestDetailWebview {
   openBrowser() {
     const url = this.contest && this.contest.url
       ? this.contest.url
-      : contestUrl(PATHS.contestDetail, this.currentContestId);
+      : contestUrl(this.currentContestId);
     return vscode.env.openExternal(vscode.Uri.parse(url));
   }
 

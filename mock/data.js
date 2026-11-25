@@ -23,14 +23,31 @@ const PROBLEMS = PROBLEM_TITLES.map((title, index) => ({
   accepted: 80 + ((index * 137) % 4200),
   submissions: 160 + ((index * 293) % 9800)
 }));
-const CONTESTS = [
-  { id: '2001', title: 'Mock 新手入门赛', status: 'upcoming', startTime: '2026-08-01 09:00', endTime: '2026-08-01 12:00', description: '面向新手的离线模拟比赛，覆盖基础语法、排序和简单数学。' },
-  { id: '2002', title: 'Mock 算法进阶赛', status: 'running', startTime: '2026-07-20 14:00', endTime: '2026-07-20 19:00', description: '综合算法训练，包含动态规划、图论与数据结构题目。' },
-  { id: '2003', title: 'Mock 动态规划专项', status: 'ended', startTime: '2026-06-11 18:00', endTime: '2026-06-11 21:00', description: '背包、序列动态规划和状态设计专项训练。' },
-  { id: '2004', title: 'Mock 图论挑战赛', status: 'running', startTime: '2026-07-21 08:30', endTime: '2026-07-21 13:30', description: '最短路、生成树、连通分量及网络流综合练习。' },
-  { id: '2005', title: 'Mock 冬季训练营', status: 'upcoming', startTime: '2026-12-15 09:00', endTime: '2026-12-15 16:00', description: '六小时团队模拟训练，适合赛前协作与复盘。' },
-  { id: '2006', title: 'Mock 春季邀请赛', status: 'ended', startTime: '2026-04-05 10:00', endTime: '2026-04-05 15:00', description: '覆盖全部知识点的邀请制模拟赛，提供完整离线榜单。' }
+// 我加入/创建的团队。myRole: 2=负责人（创建者），1=管理员（加入并管理）
+const GROUPS = [
+  { id: '7101', shortName: 'mock-acm-lab', name: 'Mock ACM 实验室', myRole: 2,
+    leaderName: 'mock_user', members: 12, isPublic: false, logoUrl: '',
+    brief: '校队日常训练与队内选拔赛，由当前用户创建。',
+    scheduledContests: 1, runningContests: 1, endedContests: 1 },
+  { id: '7102', shortName: 'mock-algo-club', name: 'Mock 算法俱乐部', myRole: 1,
+    leaderName: 'alice', members: 28, isPublic: true, logoUrl: '',
+    brief: '面向全校的算法学习小组，定期举办专项练习赛。',
+    scheduledContests: 0, runningContests: 0, endedContests: 1 },
+  { id: '7103', shortName: 'mock-freshman', name: 'Mock 新生训练营', myRole: 1,
+    leaderName: 'bob', members: 46, isPublic: true, logoUrl: '',
+    brief: '新生入门训练，侧重语法、模拟与基础数据结构。',
+    scheduledContests: 0, runningContests: 1, endedContests: 0 }
 ];
+const CONTESTS = [
+  { id: '2001', title: 'Mock 新手入门赛', status: 'upcoming', startTime: '2026-08-01 09:00', endTime: '2026-08-01 12:00', description: '面向新手的离线模拟比赛，覆盖基础语法、排序和简单数学。', groupShortName: 'mock-freshman', groupName: 'Mock 新生训练营' },
+  { id: '2002', title: 'Mock 算法进阶赛', status: 'running', startTime: '2026-07-20 14:00', endTime: '2026-07-20 19:00', description: '综合算法训练，包含动态规划、图论与数据结构题目。', groupShortName: 'mock-acm-lab', groupName: 'Mock ACM 实验室' },
+  { id: '2003', title: 'Mock 动态规划专项', status: 'ended', startTime: '2026-06-11 18:00', endTime: '2026-06-11 21:00', description: '背包、序列动态规划和状态设计专项训练。', groupShortName: 'mock-algo-club', groupName: 'Mock 算法俱乐部' },
+  { id: '2004', title: 'Mock 图论挑战赛', status: 'running', startTime: '2026-07-21 08:30', endTime: '2026-07-21 13:30', description: '最短路、生成树、连通分量及网络流综合练习。', groupShortName: '', groupName: '' },
+  { id: '2005', title: 'Mock 冬季训练营', status: 'upcoming', startTime: '2026-12-15 09:00', endTime: '2026-12-15 16:00', description: '六小时团队模拟训练，适合赛前协作与复盘。', groupShortName: 'mock-acm-lab', groupName: 'Mock ACM 实验室' },
+  { id: '2006', title: 'Mock 春季邀请赛', status: 'ended', startTime: '2026-04-05 10:00', endTime: '2026-04-05 15:00', description: '覆盖全部知识点的邀请制模拟赛，提供完整离线榜单。', groupShortName: 'mock-acm-lab', groupName: 'Mock ACM 实验室' }
+];
+// 与真实 VJudge 一致：这些 category 只应返回与当前用户团队相关的比赛
+const PERSONAL_SCOPES = new Set(['mygroup', 'group', 'mine', 'participation', 'arrangement', 'favorites', 'follow']);
 const INITIAL_SUBMISSIONS = [
   { id: '9001', problemId: 'P1001', result: 'AC', language: 'C++', submitTime: '2026-07-21 10:01:00', time: '12 ms', memory: '1.2 MB' },
   { id: '9002', problemId: 'P1004', result: 'WA', language: 'Python', submitTime: '2026-07-21 10:04:00', time: '35 ms', memory: '4.8 MB' },
@@ -219,12 +236,60 @@ class MockClient {
     return this.reply({ success: true, submission: this.publicSubmission(item) });
   }
 
-  async getContests({ page = 1, status = '' } = {}, options = {}) {
-    const filtered = CONTESTS.filter((item) => !status || item.status === status);
+  async getContests({ page = 1, status = '', category = 'all', group = '', groupName = '' } = {}, options = {}) {
+    let filtered = CONTESTS.filter((item) => !status || item.status === status);
+    // mygroup=我所有团队的比赛；group=指定团队的比赛
+    if (PERSONAL_SCOPES.has(category)) {
+      filtered = filtered.filter((item) => item.groupShortName);
+    }
+    if (category === 'group' && group) {
+      filtered = filtered.filter((item) => item.groupShortName === group
+        || item.groupName === (groupName || group));
+    }
     const pageSize = 3;
     const currentPage = Math.max(1, Number(page) || 1);
-    return this.reply({ contests: filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-      total: filtered.length, page: currentPage, pageSize, totalPages: Math.ceil(filtered.length / pageSize) }, options);
+    return this.reply({
+      contests: filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+      total: filtered.length, page: currentPage, pageSize,
+      totalPages: Math.max(1, Math.ceil(filtered.length / pageSize)), category, group
+    }, options);
+  }
+
+  async getMyGroups(options = {}) {
+    return this.reply(GROUPS.map((item) => ({ ...item, roleLabel: item.myRole === 2 ? '负责人'
+      : item.myRole === 1 ? '管理员' : '成员' })), options);
+  }
+
+  async getGroupDetail(shortName, options = {}) {
+    const group = GROUPS.find((item) => item.shortName === shortName || item.name === shortName);
+    if (!group) throw new Error(`Mock 团队不存在: ${shortName}`);
+    const contests = CONTESTS.filter((item) => item.groupShortName === group.shortName)
+      .map((item) => ({ id: item.id, title: item.title, begin: 0, end: 0 }));
+    return this.reply({
+      ...group,
+      roleLabel: group.myRole === 2 ? '负责人' : '管理员',
+      intro: { format: 'MD', content: group.brief },
+      secretId: 'mock-secret',
+      memberBriefs: [
+        { id: '1', username: 'mock_user', nickName: 'Mock 用户', role: group.myRole, joinTime: 0 },
+        { id: '2', username: 'alice', nickName: 'Alice', role: 1, joinTime: 0 }
+      ],
+      contests
+    }, options);
+  }
+
+  async searchGroups(name, options = {}) {
+    const keyword = String(name || '').trim().toLowerCase();
+    const groups = keyword
+      ? GROUPS.filter((item) => `${item.name} ${item.shortName}`.toLowerCase().includes(keyword))
+      : GROUPS;
+    return this.reply({ groups: groups.map((item) => ({ ...item })), info: '' }, options);
+  }
+
+  async getGroupContests(shortName, options = {}) {
+    const group = GROUPS.find((item) => item.shortName === shortName || item.name === shortName);
+    return this.getContests({ page: 1, category: 'group', group: shortName,
+      groupName: group ? group.name : shortName }, options);
   }
 
   async getContestDetail(id, options = {}) {
@@ -239,8 +304,20 @@ class MockClient {
     const contestIndex = CONTESTS.findIndex((item) => item.id === String(id));
     if (contestIndex < 0) throw new Error(`Mock 比赛不存在: ${id}`);
     const start = contestIndex * 6;
-    const problems = Array.from({ length: 6 }, (_, index) => ({ ...PROBLEMS[(start + index) % PROBLEMS.length],
-      label: String.fromCharCode(65 + index) }));
+    const problems = Array.from({ length: 6 }, (_, index) => {
+      const problem = PROBLEMS[(start + index) % PROBLEMS.length];
+      return {
+        ...problem,
+        key: problem.id,
+        dbId: problem.id,
+        oj: problem.oj,
+        probNum: String(1001 + ((start + index) % PROBLEMS.length)),
+        label: String.fromCharCode(65 + index),
+        title: problem.title,
+        difficulty: problem.difficulty,
+        solved: problem.solved
+      };
+    });
     return this.reply(problems, options);
   }
 
@@ -292,4 +369,4 @@ class MockClient {
   }
 }
 
-module.exports = { MockClient, PROBLEMS, CONTESTS, INITIAL_SUBMISSIONS };
+module.exports = { MockClient, PROBLEMS, CONTESTS, GROUPS, INITIAL_SUBMISSIONS };

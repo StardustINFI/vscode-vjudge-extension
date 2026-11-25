@@ -2,16 +2,18 @@
 
 ## 项目简介
 
-在 VS Code 内完成 VJudge 题目浏览、搜索筛选、比赛查看、代码提交和评测状态跟踪，减少在编辑器与浏览器之间来回切换。
+在 VS Code 内查看 VJudge 团队与比赛、浏览比赛内题目、提交代码并跟踪评测状态，减少在编辑器与浏览器之间来回切换。
 
 ### 核心特性
 
 - **纯 JavaScript，零运行时依赖**：扩展端全部使用 CommonJS，`dependencies` 与 `devDependencies` 均为空，不需要执行 `npm install`。
-- **原生 VS Code 界面**：侧边栏提供 5 个 TreeView，题目详情、比赛详情和用户信息使用 Webview 展示。
-- **完整题目流程**：浏览题目、查看题面与样例、新建代码文件、提交当前文件或选中代码。
+- **原生 VS Code 界面**：侧边栏提供 6 个 TreeView，题目详情、比赛详情和用户信息使用 Webview 展示。
+- **团队与比赛范围**：查看自己加入或创建的团队，并把比赛列表切换为「仅我的团队比赛」或「指定团队的比赛」。
+- **比赛内题目列表**：不再展示全站题目列表，选中一场比赛后侧边栏只列出该比赛的题目（题号 A/B/C 与 OJ-编号）。
+- **完整提交流程**：打开题面与样例、新建代码文件、提交当前文件或选中代码。
 - **明确的登录状态**：状态栏区分"未登录 / 已登录 / Mock"，未登录时侧边栏给出登录入口，不展示无关数据。
 - **两种登录方式**：账号密码登录，以及从浏览器复制 Cookie 的登录方式（可绕过网页端人机验证）。
-- **离线 Mock 模式**：内置 48 道题目、6 场比赛和 7 条提交记录，无网络也可体验主要功能。
+- **离线 Mock 模式**：内置 3 个团队、6 场比赛、48 道题目和 7 条提交记录，无网络也可体验主要功能。
 - **提交状态跟踪**：提交记录支持结果着色、详情查看、重新评测和 Pending 状态自动刷新。
 - **安全的凭据管理**：账号、密码、Cookie 和当前用户信息存储在 VS Code SecretStorage，不使用明文配置文件。
 - **10 种语言模板**：C++、C、Java、Python、JavaScript、TypeScript、Go、Rust、Ruby、C#。
@@ -46,10 +48,10 @@ code --install-extension vjudge-extension.vsix
 1. 打开命令面板，执行 **VJudge: Login**，选择登录方式。
 2. 推荐选择 **Cookie 登录（推荐）**：先在浏览器中登录 vjudge.net，打开开发者工具的 Network 面板，复制任意请求的 `Cookie` 请求头（包含 `JSESSIONID` 与 `JSESSlONID`），粘贴到输入框；用户名可选填，用于侧边栏显示。
 3. 若选择 **账号密码登录**，VJudge 可能要求 Turnstile 人机验证，插件无法自动完成；此时会给出明确提示并建议改用 Cookie 登录。
-4. 登录成功后状态栏显示已登录，五个视图才会加载对应数据；Cookie 过期后需要重新导入。
+4. 登录成功后状态栏显示已登录，六个视图才会加载对应数据；Cookie 过期后需要重新导入。
 5. 如需完全离线体验，请启用 Mock 模式。Mock 模式使用内置数据，不需要登录。
 
-> VJudge 的比赛列表和提交记录属于公开数据。默认未登录时不加载；如希望匿名浏览，可开启 `vjudge.anonymousBrowsing`。
+> VJudge 的比赛列表和提交记录属于公开数据。默认未登录时不加载；如希望匿名浏览，可开启 `vjudge.anonymousBrowsing`。「我的团队」「仅我的团队比赛」「指定团队的比赛」始终要求登录，不受该配置影响。
 
 ### 配置项
 
@@ -72,13 +74,30 @@ code --install-extension vjudge-extension.vsix
 
 | 视图 | 功能 |
 | --- | --- |
-| 题目列表 | 显示题号、标题、OJ、难度和解决状态；支持搜索、按 OJ/标签/难度/状态筛选及分页 |
+| 我的团队 | 列出自己加入或创建的团队；创建者以星标标识，展开可查看角色、成员名单、负责人、公开性与比赛统计 |
+| 比赛列表 | 顶部显示当前范围；支持全部比赛、仅我的团队比赛、指定团队比赛，以及按状态筛选和分页 |
+| 比赛题目 | 只显示当前选中比赛的题目，包含比赛题号（A/B/C）、OJ-编号、标题和 OJ；支持本地筛选 |
 | 我的收藏 | 查看收藏题目，支持打开详情和取消收藏 |
 | 提交记录 | 显示提交编号、题目、结果和语言；AC 为绿色、WA 为红色、Pending 为黄色 |
-| 比赛列表 | 按未开始、进行中、已结束筛选比赛；支持查看详情、题目和榜单，可报名未开始比赛 |
 | 用户信息 | 显示当前用户昵称、解题数及相关统计，可打开完整用户信息页 |
 
-真实模式下，未登录时五个视图统一显示"未登录，点击登录 VJudge"提示节点，点击即可进入登录流程。题目节点右键可打开详情、收藏或新建代码文件；提交节点右键可查看详情或重新评测；比赛节点右键可打开详情、榜单或报名。
+真实模式下，未登录时六个视图统一显示"未登录，点击登录 VJudge"提示节点，点击即可进入登录流程。团队节点右键可只看该团队比赛或在浏览器打开；比赛节点右键可打开详情、切换比赛题目、查看榜单或报名；题目节点右键可打开详情、收藏或新建代码文件；提交节点右键可查看详情或重新评测。
+
+点击「我的团队」中的团队节点，或执行 **VJudge: Show Contests Of Group**，比赛列表会切换为只看该团队的比赛；执行 **VJudge: Toggle My Groups' Contests Only** 可在「仅我的团队比赛」与「全部比赛」之间切换。**VJudge: Filter Contests** 提供完整的范围与状态筛选。点击比赛节点会在打开详情的同时把「比赛题目」视图切换到该场比赛，也可以用 **VJudge: Select Contest For Problems** 手动选择。
+
+### 数据来自哪里
+
+以下接口均来自 VJudge 网页前端的实际行为，不是臆造的 REST API：
+
+| 用途 | 接口 | 数据形式 |
+| --- | --- | --- |
+| 我的团队 | `GET /group` | 页面内联 `dataJson` 的 `myGroups`；`myRole=2` 为创建者、`1` 为管理员 |
+| 团队详情 | `GET /group/{shortName}` | 页面内联 `dataJson` 的成员、简介与比赛列表 |
+| 搜索团队 | `POST /group/search` | 表单 `name`，返回 `cards` |
+| 比赛列表 | `GET /contest/data` | DataTables 参数；`category=mygroup` 为我的团队比赛，`category=group` 配合 `owner=团队名` 为指定团队 |
+| 比赛题目 | `GET /contest/{id}` | 页面内联 `dataJson` 的 `problems`，每项含 `oj`、`probNum`、`num` |
+
+未登录时 VJudge 会把 `category=mygroup` 静默退化成全量公开比赛，因此插件在发请求前先确认登录态：未登录时该范围不会发起比赛列表请求，视图只显示登录入口。
 
 ### 命令面板
 
@@ -86,11 +105,11 @@ code --install-extension vjudge-extension.vsix
 
 - **VJudge: Login / Login With Cookie / Logout**
 - **VJudge: Toggle Mock Mode**
-- **VJudge: Search Problems / Filter Problems**
-- **VJudge: Open Problem List / Open Problem Detail**
-- **VJudge: Open Contests / Open Favorites / Open User Info**
-- **VJudge: Submit Current File / Submit Selection**
-- **VJudge: Open Code Template**
+- **VJudge: Open My Groups / Search Groups / Refresh My Groups**
+- **VJudge: Open Contests / Filter Contests / Toggle My Groups' Contests Only / Show Contests Of Group**
+- **VJudge: Open Contest Problems / Select Contest For Problems / Filter Contest Problems**
+- **VJudge: Open Problem Detail / Open Favorites / Open User Info**
+- **VJudge: Submit Current File / Submit Selection / Open Code Template**
 - **VJudge: Refresh All**
 
 ### Webview 题目详情
@@ -101,7 +120,7 @@ code --install-extension vjudge-extension.vsix
 
 ### 提交流程
 
-1. 在题目列表或收藏中打开题目。
+1. 在「比赛题目」或「我的收藏」中打开题目（也可执行 **VJudge: Open Problem Detail** 直接输入题号）。
 2. 右键选择 **New Code File**，或执行 **VJudge: Open Code Template**。
 3. 选择语言并填写代码。
 4. 执行 **VJudge: Submit Current File**，或选中部分代码后执行 **VJudge: Submit Selection**。
@@ -155,7 +174,7 @@ set VJUDGE_MOCK=true && code
 3. Mock 开启时，HTTP 层会在发网前直接阻断请求，避免任何真实访问。
 4. 项目自带两个调试配置：`Run VJudge Extension (Real)` 不注入环境变量，`Run VJudge Extension (Mock)` 注入 `VJUDGE_MOCK=true`。按 `F5` 前请确认选择的是需要的配置。
 
-Mock 数据包含 48 道题目、6 场比赛、7 条初始提交、收藏状态和比赛报名状态；新增提交、重新评测与 Pending 轮询也会在内存中模拟状态变化。
+Mock 数据包含 3 个团队（1 个创建、2 个加入）、6 场比赛（其中 5 场归属团队）、48 道题目、7 条初始提交、收藏状态和比赛报名状态。切换到「仅我的团队比赛」或某个具体团队时，比赛数量会相应变化；新增提交、重新评测与 Pending 轮询也会在内存中模拟状态变化。
 
 ## 开发与调试
 
@@ -166,7 +185,7 @@ Mock 数据包含 48 道题目、6 场比赛、7 条初始提交、收藏状态�
 ├── extension.js          # 扩展入口：注册、装配与生命周期
 ├── lib/                  # 请求、解析、存储、登录态门控、客户端和命令工作流
 ├── mock/                 # 离线客户端与内置数据
-├── views/                # 5 个原生 TreeView
+├── views/                # 6 个原生 TreeView
 ├── webviews/             # 3 个 Webview 管理器
 ├── resources/            # Webview HTML/CSS/JS 与图标
 ├── templates/            # 10 种语言代码模板
@@ -210,8 +229,8 @@ node --check resources/webview.js
 - VJudge 没有公开稳定的官方 API，当前接口路径和字段来自前端行为逆向，上游改版可能导致请求失败或字段缺失。
 - VJudge 网页登录带 Turnstile 人机验证，插件无法自动完成；账号密码登录可能因此失败，推荐使用 Cookie 登录。
 - 通过 Cookie 登录需要手动从浏览器复制，Cookie 过期后需重新导入；凭据保存在本地 SecretStorage。
-- 未登录时题目列表接口返回空列表和一个哨兵总数，插件会将其识别为"需要登录"而非真实题目总数。
-- 题目详情、比赛列表等 HTML 接口使用正则和字符串扫描解析，遇到嵌套结构变化、动态渲染或非常规表格时可能提取偏差。
+- 未登录时 VJudge 的列表接口会返回哨兵总数 `9999999`，插件将其归一化为 0，不会当成真实总数；`category=mygroup` 还会退化成全量公开比赛，因此该范围强制要求登录。
+- 团队与比赛信息优先读取页面内联 `dataJson` 的 JSON；题目详情等仍使用正则和字符串扫描解析，上游改版或非常规表格时可能提取偏差，比赛题目解析失败会回退到 HTML 中的题面链接。
 - 比赛分页、榜单字段和用户统计依赖上游实际返回结构，部分页面可能只能显示当前响应中的数据。
 - Webview 在超长题面、大量样例或超大榜单下可能出现渲染和滚动性能下降。
 - 尚未内置代码高亮和数学公式渲染库，复杂公式或代码块只能依赖题面原始 HTML。
@@ -226,6 +245,7 @@ node --check resources/webview.js
 - [ ] 为接口路径、超时和重试策略提供可配置项，降低上游变更影响。
 - [ ] 引入本地 vendor 版代码高亮与数学公式渲染，并继续遵守零 npm 依赖约束。
 - [ ] 完善比赛分页、榜单筛选、提交详情和错误分类展示。
+- [ ] 增加团队详情 Webview，展示成员列表、团队简介和团队内比赛入口。
 - [ ] 增强草稿管理，支持草稿列表、恢复提示和跨会话文件关联。
 - [ ] 增加更多语言模板和 VS Code 语言标识映射。
 - [ ] 补充多语言界面与更完整的用户文档。

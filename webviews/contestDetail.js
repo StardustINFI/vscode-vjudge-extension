@@ -120,7 +120,11 @@ class ContestDetailWebview {
       const contest = await this.getClient().getContestDetail(this.currentContestId, { signal: controller.signal });
       if (this.controller !== controller) return;
       this.contest = contest;
-      this.problems = await this.getClient().getContestProblems(this.currentContestId, { signal: controller.signal });
+      // 真实模式 /contest/{id} 的内联数据已含完整题目列表，直接复用可少发一次请求；
+      // 上游改版或 Mock 模式没有该字段时再走独立接口。
+      this.problems = Array.isArray(contest.problems) && contest.problems.length
+        ? contest.problems
+        : await this.getClient().getContestProblems(this.currentContestId, { signal: controller.signal });
       if (this.controller !== controller) return;
       const session = await this.getClient().checkSession({ signal: controller.signal });
       if (this.controller !== controller) return;

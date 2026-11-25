@@ -1,7 +1,7 @@
 {
   "name": "vscode-vjudge-extension",
   "displayName": "VJudge",
-  "description": "Browse, submit, and manage VJudge problems and contests in VS Code.",
+  "description": "Browse VJudge groups and contests, view contest problems, submit code and track verdicts in VS Code.",
   "version": "0.0.1",
   "publisher": "stardust",
   "license": "MIT",
@@ -30,30 +30,35 @@
       { "command": "vjudge.loginWithCookie", "title": "VJudge: Login With Cookie" },
       { "command": "vjudge.logout", "title": "VJudge: Logout" },
       { "command": "vjudge.toggleMockMode", "title": "VJudge: Toggle Mock Mode" },
-      { "command": "vjudge.openProblemList", "title": "VJudge: Open Problem List" },
       { "command": "vjudge.openProblemDetail", "title": "VJudge: Open Problem Detail" },
       { "command": "vjudge.openContests", "title": "VJudge: Open Contests" },
       { "command": "vjudge.openContestDetail", "title": "VJudge: Open Contest Detail" },
+      { "command": "vjudge.openContestRank", "title": "VJudge: Open Contest Rank" },
       { "command": "vjudge.openFavorites", "title": "VJudge: Open Favorites" },
       { "command": "vjudge.openUserInfo", "title": "VJudge: Open User Info" },
+      { "command": "vjudge.openGroups", "title": "VJudge: Open My Groups" },
+      { "command": "vjudge.openContestProblems", "title": "VJudge: Open Contest Problems" },
       { "command": "vjudge.submitCurrentFile", "title": "VJudge: Submit Current File" },
       { "command": "vjudge.submitSelection", "title": "VJudge: Submit Selection" },
       { "command": "vjudge.openCodeTemplate", "title": "VJudge: Open Code Template" },
       { "command": "vjudge.refreshAll", "title": "VJudge: Refresh All", "icon": "$(refresh)" },
-      { "command": "vjudge.searchProblems", "title": "VJudge: Search Problems", "icon": "$(search)" },
-      { "command": "vjudge.filterProblems", "title": "VJudge: Filter Problems", "icon": "$(filter)" },
-      { "command": "vjudge.previousProblems", "title": "VJudge: Previous Problem Page", "icon": "$(chevron-left)" },
-      { "command": "vjudge.nextProblems", "title": "VJudge: Next Problem Page", "icon": "$(chevron-right)" },
-      { "command": "vjudge.filterContests", "title": "VJudge: Filter Contests", "icon": "$(filter)" },
-      { "command": "vjudge.previousContests", "title": "VJudge: Previous Contest Page", "icon": "$(chevron-left)" },
-      { "command": "vjudge.nextContests", "title": "VJudge: Next Contest Page", "icon": "$(chevron-right)" },
       { "command": "vjudge.addFavorite", "title": "VJudge: Add Favorite" },
       { "command": "vjudge.removeFavorite", "title": "VJudge: Remove Favorite" },
       { "command": "vjudge.newCodeFile", "title": "VJudge: New Code File" },
       { "command": "vjudge.viewSubmission", "title": "VJudge: View Submission" },
       { "command": "vjudge.rejudge", "title": "VJudge: Rejudge" },
-      { "command": "vjudge.openContestRank", "title": "VJudge: Open Contest Rank" },
-      { "command": "vjudge.registerContest", "title": "VJudge: Register Contest" }
+      { "command": "vjudge.registerContest", "title": "VJudge: Register Contest" },
+      { "command": "vjudge.filterContests", "title": "VJudge: Filter Contests", "icon": "$(filter)" },
+      { "command": "vjudge.previousContests", "title": "VJudge: Previous Contest Page", "icon": "$(chevron-left)" },
+      { "command": "vjudge.nextContests", "title": "VJudge: Next Contest Page", "icon": "$(chevron-right)" },
+      { "command": "vjudge.selectContest", "title": "VJudge: Select Contest For Problems", "icon": "$(list-unordered)" },
+      { "command": "vjudge.selectContestGroup", "title": "VJudge: Show Contests Of Group" },
+      { "command": "vjudge.toggleMyGroupContests", "title": "VJudge: Toggle My Groups' Contests Only", "icon": "$(organization)" },
+      { "command": "vjudge.refreshGroups", "title": "VJudge: Refresh My Groups", "icon": "$(refresh)" },
+      { "command": "vjudge.openGroupInBrowser", "title": "VJudge: Open Group In Browser" },
+      { "command": "vjudge.searchGroups", "title": "VJudge: Search Groups", "icon": "$(search)" },
+      { "command": "vjudge.searchContestProblems", "title": "VJudge: Filter Contest Problems", "icon": "$(search)" },
+      { "command": "vjudge.refreshContestProblems", "title": "VJudge: Refresh Contest Problems", "icon": "$(refresh)" }
     ],
     "configuration": {
       "title": "VJudge",
@@ -66,7 +71,7 @@
         "vjudge.anonymousBrowsing": {
           "type": "boolean",
           "default": false,
-          "description": "Load public VJudge contests and submission records even when logged out."
+          "description": "Load public VJudge contests and submission records even when logged out. Group-scoped views always require login."
         }
       }
     },
@@ -81,10 +86,11 @@
     },
     "views": {
       "vjudge": [
-        { "id": "vjudge.problems", "name": "题目列表" },
+        { "id": "vjudge.groups", "name": "我的团队" },
+        { "id": "vjudge.contests", "name": "比赛列表" },
+        { "id": "vjudge.contestProblems", "name": "比赛题目" },
         { "id": "vjudge.favorites", "name": "我的收藏" },
         { "id": "vjudge.submissions", "name": "提交记录" },
-        { "id": "vjudge.contests", "name": "比赛列表" },
         { "id": "vjudge.user", "name": "用户信息" }
       ]
     },
@@ -97,33 +103,40 @@
         { "command": "vjudge.viewSubmission", "when": "false" },
         { "command": "vjudge.rejudge", "when": "false" },
         { "command": "vjudge.openContestRank", "when": "false" },
-        { "command": "vjudge.registerContest", "when": "false" }
+        { "command": "vjudge.registerContest", "when": "false" },
+        { "command": "vjudge.openGroupInBrowser", "when": "false" }
       ],
       "view/title": [
-        { "command": "vjudge.searchProblems", "when": "view == vjudge.problems", "group": "navigation@1" },
-        { "command": "vjudge.filterProblems", "when": "view == vjudge.problems", "group": "navigation@2" },
-        { "command": "vjudge.previousProblems", "when": "view == vjudge.problems", "group": "navigation@3" },
-        { "command": "vjudge.nextProblems", "when": "view == vjudge.problems", "group": "navigation@4" },
+        { "command": "vjudge.refreshGroups", "when": "view == vjudge.groups", "group": "navigation@1" },
+        { "command": "vjudge.searchGroups", "when": "view == vjudge.groups", "group": "navigation@2" },
         { "command": "vjudge.filterContests", "when": "view == vjudge.contests", "group": "navigation@1" },
-        { "command": "vjudge.previousContests", "when": "view == vjudge.contests", "group": "navigation@2" },
-        { "command": "vjudge.nextContests", "when": "view == vjudge.contests", "group": "navigation@3" },
+        { "command": "vjudge.toggleMyGroupContests", "when": "view == vjudge.contests", "group": "navigation@2" },
+        { "command": "vjudge.selectContestGroup", "when": "view == vjudge.contests", "group": "navigation@3" },
+        { "command": "vjudge.previousContests", "when": "view == vjudge.contests", "group": "navigation@4" },
+        { "command": "vjudge.nextContests", "when": "view == vjudge.contests", "group": "navigation@5" },
+        { "command": "vjudge.selectContest", "when": "view == vjudge.contestProblems", "group": "navigation@1" },
+        { "command": "vjudge.searchContestProblems", "when": "view == vjudge.contestProblems", "group": "navigation@2" },
+        { "command": "vjudge.refreshContestProblems", "when": "view == vjudge.contestProblems", "group": "navigation@3" },
         {
           "command": "vjudge.refreshAll",
-          "when": "view == vjudge.problems || view == vjudge.favorites || view == vjudge.submissions || view == vjudge.contests || view == vjudge.user",
+          "when": "view == vjudge.groups || view == vjudge.contests || view == vjudge.contestProblems || view == vjudge.favorites || view == vjudge.submissions || view == vjudge.user",
           "group": "navigation@9"
         }
       ],
       "view/item/context": [
-        { "command": "vjudge.openProblemDetail", "when": "view == vjudge.problems && viewItem == problem", "group": "navigation@1" },
-        { "command": "vjudge.addFavorite", "when": "view == vjudge.problems && viewItem == problem", "group": "vjudge@1" },
-        { "command": "vjudge.newCodeFile", "when": "view == vjudge.problems && viewItem == problem", "group": "vjudge@2" },
+        { "command": "vjudge.selectContestGroup", "when": "view == vjudge.groups && viewItem == group", "group": "navigation@1" },
+        { "command": "vjudge.openGroupInBrowser", "when": "view == vjudge.groups && viewItem == group", "group": "vjudge@1" },
+        { "command": "vjudge.openContestDetail", "when": "view == vjudge.contests && viewItem == contest", "group": "navigation@1" },
+        { "command": "vjudge.selectContest", "when": "view == vjudge.contests && viewItem == contest", "group": "navigation@2" },
+        { "command": "vjudge.openContestRank", "when": "view == vjudge.contests && viewItem == contest", "group": "vjudge@1" },
+        { "command": "vjudge.registerContest", "when": "view == vjudge.contests && viewItem == contest", "group": "vjudge@2" },
+        { "command": "vjudge.openProblemDetail", "when": "view == vjudge.contestProblems && viewItem == problem", "group": "navigation@1" },
+        { "command": "vjudge.addFavorite", "when": "view == vjudge.contestProblems && viewItem == problem", "group": "vjudge@1" },
+        { "command": "vjudge.newCodeFile", "when": "view == vjudge.contestProblems && viewItem == problem", "group": "vjudge@2" },
         { "command": "vjudge.openProblemDetail", "when": "view == vjudge.favorites && viewItem == favorite", "group": "navigation@1" },
         { "command": "vjudge.removeFavorite", "when": "view == vjudge.favorites && viewItem == favorite", "group": "vjudge@1" },
         { "command": "vjudge.viewSubmission", "when": "view == vjudge.submissions && viewItem == submission", "group": "navigation@1" },
-        { "command": "vjudge.rejudge", "when": "view == vjudge.submissions && viewItem == submission", "group": "vjudge@1" },
-        { "command": "vjudge.openContestDetail", "when": "view == vjudge.contests && viewItem == contest", "group": "navigation@1" },
-        { "command": "vjudge.openContestRank", "when": "view == vjudge.contests && viewItem == contest", "group": "vjudge@1" },
-        { "command": "vjudge.registerContest", "when": "view == vjudge.contests && viewItem == contest", "group": "vjudge@2" }
+        { "command": "vjudge.rejudge", "when": "view == vjudge.submissions && viewItem == submission", "group": "vjudge@1" }
       ]
     }
   },

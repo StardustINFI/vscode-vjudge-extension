@@ -104,9 +104,23 @@ function renderMath(root) {
   });
 }
 
+// 图片加载失败时换用 data-fallback 备用地址（扩展宿主侧抓取/内联失败后写入，
+// 通常是 VJudge 图片代理），再失败则维持原样显示裂图。
+function attachImageFallback(root) {
+  root.querySelectorAll('img[data-fallback]').forEach((img) => {
+    img.addEventListener('error', () => {
+      const fallback = img.getAttribute('data-fallback');
+      if (!fallback) return;
+      img.removeAttribute('data-fallback');
+      if (img.src !== fallback) img.src = fallback;
+    });
+  });
+}
+
 function setHtml(app, html) {
   app.innerHTML = html;
   renderMath(app);
+  attachImageFallback(app);
 }
 
 function render() {

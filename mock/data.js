@@ -363,8 +363,10 @@ class MockClient {
     const name = username || (this.currentUser && this.currentUser.username) || 'mock_user';
     const solvedCount = PROBLEMS.filter((item) => item.solved).length;
     return this.reply({ username: name, nickname: this.currentUser && name === this.currentUser.username
-      ? this.currentUser.nickname : `${name}（Mock）`, avatar: '', solvedCount,
-      submissionCount: this.submissions.length, acceptRate: '68.4%', rank: 42,
+      ? this.currentUser.nickname : `${name}（Mock）`, displayName: 'Mock 显示名', avatar: '', solvedCount,
+      attemptedCount: PROBLEMS.length, submissionCount: this.submissions.length, acceptRate: '68.4%', rank: 42,
+      ranks: { d1: 0, d7: 8, d30: 20, all: 42 },
+      facts: [{ label: '注册时间', value: '1 年前' }, { label: '学校', value: 'Mock 中学' }],
       registeredContests: Array.from(this.registeredContests), mock: true });
   }
 }

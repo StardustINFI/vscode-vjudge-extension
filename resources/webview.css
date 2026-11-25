@@ -386,6 +386,30 @@ td.button-cell, th.button-cell { text-align: right; }
   font-weight: 700;
 }
 
+.avatar-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.facts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.profile-fact-item {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.profile-fact-item dt { color: var(--vjudge-muted); }
+.profile-fact-item dd { margin: 0; }
+
 .profile-name { margin: 0; }
 
 .stats {

@@ -279,16 +279,25 @@ function renderContestRank() {
 
 function renderUser() {
   const user = state.user || {};
-  const initial = (user.username || user.nickname || '?').slice(0, 1).toUpperCase();
+  const name = user.nickname || user.username || '?';
+  const initial = name.slice(0, 1).toUpperCase();
+  const avatarSrc = user.avatar || user.avatarUrl || '';
+  const avatar = avatarSrc
+    ? `<img class="avatar-img" src="${escapeHtml(avatarSrc)}" alt="" referrerpolicy="no-referrer">`
+    : escapeHtml(initial);
+  const secondary = user.displayName && user.displayName !== (user.username || '')
+    ? user.displayName : (user.username || '');
   const stats = [
-    ['解题数', user.solvedCount ?? user.solved ?? 0], ['提交数', user.submissionCount ?? '-'],
-    ['通过率', user.acceptRate ?? '-'], ['排名', user.rank ?? '-']
+    ['解题数', user.solvedCount ?? user.solved ?? 0], ['尝试数', user.attemptedCount ?? '-'],
+    ['通过率', user.acceptRate || '-'], ['排名', user.rank ?? '-']
   ];
+  const facts = (user.facts || []).map((fact) => `<div class="profile-fact-item"><dt>${escapeHtml(fact.label)}</dt><dd>${escapeHtml(fact.value)}</dd></div>`).join('');
   return `${toolbar(user.nickname || user.username || '用户信息', escapeHtml(user.username || state.username || ''), '<button data-action="refresh">刷新</button><button data-action="openBrowser">网页版</button>')}
-  <section class="card profile"><div class="avatar">${escapeHtml(initial)}</div>
+  <section class="card profile"><div class="avatar">${avatar}</div>
     <div><h2 class="profile-name">${escapeHtml(user.nickname || user.username || '未知用户')}</h2>
-    <div class="metadata"><span>${escapeHtml(user.username || '')}</span>${state.mockMode ? badge('Mock 模式', 'mock') : ''}</div></div>
+    <div class="metadata">${secondary ? `<span>${escapeHtml(secondary)}</span>` : ''}${state.mockMode ? badge('Mock 模式', 'mock') : ''}</div></div>
   </section>
+  ${facts ? `<section class="card"><dl class="facts-grid">${facts}</dl></section>` : ''}
   <section class="card stats">${stats.map(([label, value]) => `<div class="stat"><div class="stat-value">${escapeHtml(String(value))}</div><div class="stat-label">${label}</div></div>`).join('')}</section>`;
 }
 

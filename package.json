@@ -39,6 +39,13 @@
       { "command": "vjudge.submitSelection", "title": "VJudge: Submit Selection" },
       { "command": "vjudge.openCodeTemplate", "title": "VJudge: Open Code Template" },
       { "command": "vjudge.refreshAll", "title": "VJudge: Refresh All", "icon": "$(refresh)" },
+      { "command": "vjudge.searchProblems", "title": "VJudge: Search Problems", "icon": "$(search)" },
+      { "command": "vjudge.filterProblems", "title": "VJudge: Filter Problems", "icon": "$(filter)" },
+      { "command": "vjudge.previousProblems", "title": "VJudge: Previous Problem Page", "icon": "$(chevron-left)" },
+      { "command": "vjudge.nextProblems", "title": "VJudge: Next Problem Page", "icon": "$(chevron-right)" },
+      { "command": "vjudge.filterContests", "title": "VJudge: Filter Contests", "icon": "$(filter)" },
+      { "command": "vjudge.previousContests", "title": "VJudge: Previous Contest Page", "icon": "$(chevron-left)" },
+      { "command": "vjudge.nextContests", "title": "VJudge: Next Contest Page", "icon": "$(chevron-right)" },
       { "command": "vjudge.addFavorite", "title": "VJudge: Add Favorite" },
       { "command": "vjudge.removeFavorite", "title": "VJudge: Remove Favorite" },
       { "command": "vjudge.newCodeFile", "title": "VJudge: New Code File" },
@@ -87,10 +94,17 @@
         { "command": "vjudge.registerContest", "when": "false" }
       ],
       "view/title": [
+        { "command": "vjudge.searchProblems", "when": "view == vjudge.problems", "group": "navigation@1" },
+        { "command": "vjudge.filterProblems", "when": "view == vjudge.problems", "group": "navigation@2" },
+        { "command": "vjudge.previousProblems", "when": "view == vjudge.problems", "group": "navigation@3" },
+        { "command": "vjudge.nextProblems", "when": "view == vjudge.problems", "group": "navigation@4" },
+        { "command": "vjudge.filterContests", "when": "view == vjudge.contests", "group": "navigation@1" },
+        { "command": "vjudge.previousContests", "when": "view == vjudge.contests", "group": "navigation@2" },
+        { "command": "vjudge.nextContests", "when": "view == vjudge.contests", "group": "navigation@3" },
         {
           "command": "vjudge.refreshAll",
           "when": "view == vjudge.problems || view == vjudge.favorites || view == vjudge.submissions || view == vjudge.contests || view == vjudge.user",
-          "group": "navigation"
+          "group": "navigation@9"
         }
       ],
       "view/item/context": [

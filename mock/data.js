@@ -118,9 +118,9 @@ class MockClient {
     return this.reply({ success: true });
   }
 
-  async checkSession() {
+  async checkSession(options = {}) {
     return this.reply({ loggedIn: this.loggedIn, username: this.currentUser && this.currentUser.username,
-      data: { user: this.currentUser } });
+      data: { user: this.currentUser } }, options);
   }
 
   async getProblems({ page = 1, search = '', oj = '', tag = '', difficulty = '', solved = '' } = {}, options = {}) {

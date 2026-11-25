@@ -1,6 +1,7 @@
 'use strict';
 
 const vscode = require('vscode');
+const { loginRequired, loginNode } = require('../lib/session');
 
 const STATUS_LABELS = { upcoming: '未开始', running: '进行中', ended: '已结束', unknown: '未知状态' };
 
@@ -9,6 +10,8 @@ class ContestTree {
     this.getClient = getClient;
     this.emitter = new vscode.EventEmitter();
     this.onDidChangeTreeData = this.emitter.event;
+    this.requiresAuth = false; // 比赛列表为公开数据，仅在允许匿名浏览时可展示
+    this.loggedOut = false;
     this.items = [];
     this.loaded = false;
     this.loading = false;
@@ -25,7 +28,16 @@ class ContestTree {
     this.error = undefined;
     this.emitter.fire();
     try {
-      const result = await this.getClient().getContests({ page: this.page, status: this.status }, { signal: controller.signal });
+      const client = this.getClient();
+      if (await loginRequired(client, this.requiresAuth)) {
+        if (this.controller !== controller) return;
+        this.items = [];
+        this.loggedOut = true;
+        this.loaded = true;
+        return;
+      }
+      this.loggedOut = false;
+      const result = await client.getContests({ page: this.page, status: this.status }, { signal: controller.signal });
       if (this.controller !== controller) return;
       this.items = result.contests;
       this.totalPages = result.totalPages || Math.max(1, Math.ceil(result.total / (result.pageSize || 50)));
@@ -33,6 +45,8 @@ class ContestTree {
     } catch (error) {
       if (error.name !== 'AbortError' && this.controller === controller) {
         this.error = error.message;
+        this.items = [];
+        this.loggedOut = false;
         this.loaded = true;
       }
     } finally {
@@ -71,6 +85,7 @@ class ContestTree {
     if (node.type === 'status') {
       const item = new vscode.TreeItem(node.label);
       item.iconPath = new vscode.ThemeIcon(node.icon);
+      if (node.command) item.command = node.command;
       return item;
     }
     const contest = node.contest;
@@ -89,6 +104,7 @@ class ContestTree {
   getChildren(element) {
     if (element) return [];
     if (!this.loaded && !this.loading) this.load();
+    if (this.loggedOut) return [loginNode()];
     if (this.loading && !this.items.length) return [{ type: 'status', label: '正在加载比赛…', icon: 'loading~spin' }];
     if (this.error) return [{ type: 'status', label: `加载失败: ${this.error}`, icon: 'error' }];
     if (!this.items.length) return [{ type: 'status', label: '没有匹配的比赛', icon: 'info' }];

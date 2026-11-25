@@ -1,12 +1,15 @@
 'use strict';
 
 const vscode = require('vscode');
+const { loginRequired, loginNode } = require('../lib/session');
 
 class UserTree {
   constructor(getClient) {
     this.getClient = getClient;
     this.emitter = new vscode.EventEmitter();
     this.onDidChangeTreeData = this.emitter.event;
+    this.requiresAuth = true;
+    this.loggedOut = false;
     this.loaded = false;
     this.loading = false;
   }
@@ -19,16 +22,26 @@ class UserTree {
     this.error = undefined;
     this.emitter.fire();
     try {
-      const session = await this.getClient().checkSession({ signal: controller.signal });
+      const client = this.getClient();
+      if (await loginRequired(client, this.requiresAuth)) {
+        if (this.controller !== controller) return;
+        this.user = undefined;
+        this.loggedOut = true;
+        this.loaded = true;
+        return;
+      }
+      this.loggedOut = false;
+      const session = await client.checkSession({ signal: controller.signal });
       if (this.controller !== controller) return;
       this.user = session.loggedIn
-        ? await this.getClient().getUserInfo(session.username, { signal: controller.signal })
+        ? await client.getUserInfo(session.username, { signal: controller.signal })
         : undefined;
       if (this.controller !== controller) return;
       this.loaded = true;
     } catch (error) {
       if (error.name !== 'AbortError' && this.controller === controller) {
         this.error = error.message;
+        this.loggedOut = false;
         this.loaded = true;
       }
     } finally {
@@ -64,6 +77,7 @@ class UserTree {
   getChildren(element) {
     if (element) return [];
     if (!this.loaded && !this.loading) this.load();
+    if (this.loggedOut) return [loginNode()];
     if (this.loading) return [{ type: 'status', label: '正在加载用户信息…', icon: 'loading~spin' }];
     if (this.error) return [{ type: 'status', label: `加载失败: ${this.error}`, icon: 'error' }];
     if (!this.user) return [{ type: 'status', label: '未登录，点击登录', icon: 'account',

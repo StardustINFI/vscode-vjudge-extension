@@ -100,6 +100,26 @@ class MockClient {
     };
   }
 
+  // Mock 模式为离线演示，不做登录门控，始终允许浏览内置数据
+  requiresLogin() { return false; }
+
+  isLoggedIn() { return true; }
+
+  async ensureSession() {
+    return { loggedIn: true, username: this.currentUser && this.currentUser.username, checked: true };
+  }
+
+  allowsAnonymousBrowsing() { return true; }
+
+  async loginWithCookie(cookieText, username = '') {
+    if (!String(cookieText || '').trim()) throw new Error('请粘贴 Cookie 内容');
+    const name = username || 'mock-user';
+    this.loggedIn = true;
+    this.currentUser = { username: name, nickname: `${name}（Mock）` };
+    if (this.store) await this.store.setCurrentUser(this.currentUser);
+    return this.reply({ success: true, username: name });
+  }
+
   async login(user, pass) {
     if (!user || !pass) throw new Error('用户名和密码不能为空');
     this.loggedIn = true;

@@ -1,12 +1,15 @@
 'use strict';
 
 const vscode = require('vscode');
+const { loginRequired, loginNode } = require('../lib/session');
 
 class ProblemTree {
   constructor(getClient) {
     this.getClient = getClient;
     this.emitter = new vscode.EventEmitter();
     this.onDidChangeTreeData = this.emitter.event;
+    this.requiresAuth = true;
+    this.loggedOut = false;
     this.items = [];
     this.page = 1;
     this.totalPages = 1;
@@ -23,7 +26,16 @@ class ProblemTree {
     this.error = undefined;
     this.emitter.fire();
     try {
-      const result = await this.getClient().getProblems({ page: this.page, ...this.filters }, { signal: controller.signal });
+      const client = this.getClient();
+      if (await loginRequired(client, this.requiresAuth)) {
+        if (this.controller !== controller) return;
+        this.items = [];
+        this.loggedOut = true;
+        this.loaded = true;
+        return;
+      }
+      this.loggedOut = false;
+      const result = await client.getProblems({ page: this.page, ...this.filters }, { signal: controller.signal });
       if (this.controller !== controller) return;
       this.items = result.problems;
       this.totalPages = result.totalPages || Math.max(1, Math.ceil(result.total / (result.pageSize || 50)));
@@ -32,6 +44,7 @@ class ProblemTree {
       if (error.name !== 'AbortError' && this.controller === controller) {
         this.error = error.message;
         this.items = [];
+        this.loggedOut = false;
         this.loaded = true;
       }
     } finally {
@@ -92,6 +105,7 @@ class ProblemTree {
     if (node.type === 'status') {
       const item = new vscode.TreeItem(node.label);
       item.iconPath = new vscode.ThemeIcon(node.icon);
+      if (node.command) item.command = node.command;
       return item;
     }
     const problem = node.problem;
@@ -109,6 +123,7 @@ class ProblemTree {
   getChildren(element) {
     if (element) return [];
     if (!this.loaded && !this.loading) this.load();
+    if (this.loggedOut) return [loginNode()];
     if (this.loading && !this.items.length) return [{ type: 'status', label: '正在加载题目…', icon: 'loading~spin' }];
     if (this.error) return [{ type: 'status', label: `加载失败: ${this.error}`, icon: 'error' }];
     if (!this.items.length) return [{ type: 'status', label: '没有匹配的题目', icon: 'info' }];

@@ -41,6 +41,11 @@ function activate(context) {
   });
   commandManager.register();
   commandManager.updateStatus();
+  // 启动时确认一次服务端登录态，让状态栏和五个视图使用同一份结果
+  Promise.resolve()
+    .then(() => (getClient().ensureSession ? getClient().ensureSession() : undefined))
+    .catch(() => undefined)
+    .then(() => commandManager.updateStatus());
 
   context.subscriptions.push(...treeViews, ...views.list, eventBus, statusBar, commandManager, outputChannel);
   context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async (event) => {

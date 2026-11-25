@@ -27,6 +27,7 @@
   "contributes": {
     "commands": [
       { "command": "vjudge.login", "title": "VJudge: Login" },
+      { "command": "vjudge.loginWithCookie", "title": "VJudge: Login With Cookie" },
       { "command": "vjudge.logout", "title": "VJudge: Logout" },
       { "command": "vjudge.toggleMockMode", "title": "VJudge: Toggle Mock Mode" },
       { "command": "vjudge.openProblemList", "title": "VJudge: Open Problem List" },
@@ -61,6 +62,11 @@
           "type": "boolean",
           "default": false,
           "description": "Use built-in mock data. VJUDGE_MOCK=true takes precedence and disables all real network requests."
+        },
+        "vjudge.anonymousBrowsing": {
+          "type": "boolean",
+          "default": false,
+          "description": "Load public VJudge contests and submission records even when logged out."
         }
       }
     },

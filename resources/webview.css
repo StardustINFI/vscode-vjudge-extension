@@ -145,6 +145,62 @@ select, input {
   padding: 2px 0;
 }
 
+/* 洛谷 Markdown 扩展：折叠框 */
+.lg-fold {
+  margin: 10px 0;
+  border: 1px solid var(--vjudge-border);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: var(--vjudge-card);
+  overflow: hidden;
+}
+
+.lg-fold > summary {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 650;
+  list-style: none;
+  user-select: none;
+}
+
+.lg-fold > summary::-webkit-details-marker { display: none; }
+.lg-fold > summary::before { content: '▸ '; }
+.lg-fold[open] > summary::before { content: '▾ '; }
+.lg-fold-body { padding: 4px 12px 10px; }
+.lg-fold-body > :first-child { margin-top: 0; }
+.lg-fold-body > :last-child { margin-bottom: 0; }
+
+.lg-fold-info { border-left-color: var(--vscode-info-foreground, #3794ff); }
+.lg-fold-success { border-left-color: var(--vjudge-green); }
+.lg-fold-warning { border-left-color: var(--vjudge-yellow); }
+.lg-fold-error { border-left-color: var(--vjudge-red); }
+.lg-fold-info > summary { color: var(--vscode-info-foreground, #3794ff); }
+.lg-fold-success > summary { color: var(--vjudge-green); }
+.lg-fold-warning > summary { color: var(--vjudge-yellow); }
+.lg-fold-error > summary { color: var(--vjudge-red); }
+
+/* 洛谷对齐容器与引言 */
+.lg-align-center { text-align: center; }
+.lg-align-right { text-align: right; }
+.lg-align-center > :first-child, .lg-align-right > :first-child { margin-top: 0; }
+
+.lg-epigraph {
+  margin: 12px 0;
+  padding: 10px 16px;
+  border-left: 3px solid var(--vjudge-accent);
+  color: var(--vjudge-muted);
+  font-style: italic;
+}
+
+.lg-epigraph-by { margin-top: 6px; text-align: right; font-style: normal; }
+
+/* 删除线、任务列表与洛谷表格 */
+del { color: var(--vjudge-muted); text-decoration: line-through; }
+ul.lg-task { list-style: none; padding-left: 16px; }
+ul.lg-task li input { margin-right: 6px; vertical-align: middle; }
+.lg-table { width: auto; max-width: 100%; }
+.lg-table-tuack th, .lg-table-tuack td { border: 1px solid var(--vjudge-border); }
+
 .vjudge-empty {
   margin: 0;
   padding: 18px;

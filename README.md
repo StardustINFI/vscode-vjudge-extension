@@ -124,7 +124,9 @@ code --install-extension vjudge-extension.vsix
 
 VJudge 的服务端 HTML 是未经前端渲染的模板，其中含有未翻译的 i18n 键、内联数据和隐藏区块。插件只提取真正的题面内容并做清洗，不会把整页骨架当作正文显示；若题面暂时无法解析，页面会给出提示，可点击「网页版」前往 VJudge 查看完整题目。比赛详情中的题目描述采用同样策略。
 
-题面中的 LaTeX 公式在 Webview 内用本地 KaTeX 渲染，支持行内公式、块级公式以及 `\(`/`\)`、`\[`/`\]` 定界符。KaTeX 的脚本、样式与字体全部放在 `resources/vendor/katex`，不发起网络请求、不引入 npm 依赖；公式片段在 Markdown 转换时先被隔离，避免星号或 HTML 转义破坏语法。
+题面中的 LaTeX 公式在 Webview 内用本地 KaTeX 渲染，支持行内公式、块级公式以及 `\(`/`\)`、`\[`/`\]` 定界符。KaTeX 的脚本、样式与字体全部放在 `resources/vendor/katex`，不发起网络请求、不引入 npm 依赖；公式片段在 Markdown 转换时先被隔离，避免星号或 HTML 转义破坏语法。洛谷的手册也说明其主要使用 KaTeX 渲染，因此公式语法与洛谷题面保持一致。
+
+题面还支持洛谷 Markdown 扩展语法：`:::info` / `:::success` / `:::warning` / `:::error` 折叠框（可用 `{open}` 默认展开、支持嵌套与公式标题）、`:::align{center}` / `:::align{right}` 对齐、`:::epigraph` 引言、`::cute-table{tuack}` 表格以及表格的 `^` / `<` 单元格合并。此外还支持删除线、任务列表、带 title 的链接与图片、代码块行号与高亮参数；按洛谷规则不解析原始 HTML 标签。
 
 代码提交区可选择语言并直接编辑代码。停止输入约 500 毫秒后会自动保存本地草稿；提交成功后会自动刷新最新评测状态。
 

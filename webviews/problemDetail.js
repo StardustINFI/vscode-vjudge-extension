@@ -103,6 +103,13 @@ class ProblemDetailWebview {
     this.controller = controller;
     this.loading = true;
     this.error = undefined;
+    // 切换题目时必须清空上一题的残留状态，否则新题目页会短暂（或持久）显示
+    // 上一题的题面、收藏状态与提交结果（典型症状：没做的题底部却显示 AC）。
+    this.problem = undefined;
+    this.favorite = false;
+    this.latestSubmission = undefined;
+    this.user = undefined;
+    this.updatePolling(false);
     this.send(this.state());
     try {
       const problem = await this.getClient().getProblemDetail(this.currentProblemId, { signal: controller.signal });

@@ -3,12 +3,9 @@
   "displayName": "VJudge",
   "description": "Browse VJudge groups and contests, view contest problems, submit code and track verdicts in VS Code.",
   "version": "0.0.1",
-  "publisher": "stardust",
+  "publisher": "stardustinfi",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/StardustINFI/vscode-vjudge-extension.git"
-  },
+  "repository": "https://github.com/StardustINFI/vscode-vjudge-extension",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -141,5 +138,7 @@
     }
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/vscode": "^1.80.0"
+  }
 }

@@ -96,7 +96,9 @@ function renderMath(root) {
           { left: '\\(', right: '\\)', display: false }
         ],
         throwOnError: false,
-        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'option']
+        // AtCoder 输入格式说明把 \(...\) 写在 <pre> 代码块里，需放行 pre/code
+        // 才能让 KaTeX 排版；样例数据块没有分隔符，不会被误渲染。
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'option']
       });
     } catch (error) {
       // 单个题面渲染失败时保留原始公式文本，不影响其他内容。

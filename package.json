@@ -2,7 +2,7 @@
   "name": "vscode-vjudge-extension",
   "displayName": "VJudge",
   "description": "Browse VJudge groups and contests, view contest problems, submit code and track verdicts in VS Code.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "stardustinfi",
   "license": "MIT",
   "repository": "https://github.com/StardustINFI/vscode-vjudge-extension",
